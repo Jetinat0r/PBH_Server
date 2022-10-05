@@ -29,13 +29,14 @@ public class GameManager : MonoBehaviour
         NetworkManager.instance.Server.ClientDisconnected += RemovePlayer;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
-
+        SendPlayerPosRots();
     }
 
-    [MessageHandler((ushort)ClientToServerId.sendJoinInfo)]
+    #region Messages
+    #region Joining & Disconnecting
+    [MessageHandler((ushort)ClientToServerId.joinInfo)]
     private static void SpawnPlayer(ushort fromClientId, Message message)
     {
         //Tell the player who just joined who is on the server
@@ -66,7 +67,9 @@ public class GameManager : MonoBehaviour
         message.AddUShort(fromClientId);     //Add client ID
         message.AddString(playerName);       //Add player name
 
-        NetworkManager.instance.Server.SendToAll(message, fromClientId);
+        //NetworkManager.instance.Server.SendToAll(message, fromClientId);
+        NetworkManager.instance.Server.SendToAll(message);
+
     }
 
     //TODO: Refactor for Player dictionary
@@ -92,4 +95,35 @@ public class GameManager : MonoBehaviour
         Destroy(Player.PlayerList[e.Id].gameObject);
         Player.PlayerList.Remove(e.Id);
     }
+    #endregion
+
+    #region Movement
+    //Handle movement
+    [MessageHandler((ushort)ClientToServerId.playerPosRot)]
+    private static void HandlePlayerMovement(ushort fromClientId, Message message)
+    {
+        Vector3 pos = message.GetVector3();
+        Quaternion rot = message.GetQuaternion();
+
+        if(Player.PlayerList.TryGetValue(fromClientId, out Player player))
+        {
+            player.transform.SetPositionAndRotation(pos, rot);
+        }
+    }
+
+    private static void SendPlayerPosRots()
+    {
+        foreach(Player player in Player.PlayerList.Values)
+        {
+            Message message = Message.Create(MessageSendMode.unreliable, ServerToClientId.playerPosRot);
+
+            message.Add(player.PlayerId);
+            message.Add(player.transform.position);
+            message.Add(player.transform.rotation);
+
+            NetworkManager.instance.Server.SendToAll(message, player.PlayerId);
+        }
+    }
+    #endregion
+    #endregion
 }

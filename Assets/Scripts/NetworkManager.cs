@@ -8,13 +8,14 @@ using UnityEngine;
 
 public enum ClientToServerId : ushort
 {
-    sendJoinInfo = 1,
-    sendPlayerPosRot = 2,
+    joinInfo = 1,
+    playerPosRot = 2,
 }
 
 public enum ServerToClientId : ushort
 {
     playerSpawnInfo = 1,
+    playerPosRot = 2,
 }
 
 public class NetworkManager : MonoBehaviour
