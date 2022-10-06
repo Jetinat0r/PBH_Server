@@ -51,7 +51,6 @@ public class GameManager : MonoBehaviour
 
         Player player = Instantiate(GameManager.instance.playerPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity);
         Player.PlayerList.Add(fromClientId, player);
-        player.GetComponent<SpriteRenderer>().color = Player.PlayerColorMap[fromClientId]; //TODO: Change to a setup function
         player.SetSpawnInfo(fromClientId, playerName);
 
 
@@ -107,7 +106,7 @@ public class GameManager : MonoBehaviour
 
         if(Player.PlayerList.TryGetValue(fromClientId, out Player player))
         {
-            player.transform.SetPositionAndRotation(pos, rot);
+            player.SetPosRot(pos, rot);
         }
     }
 
@@ -118,8 +117,8 @@ public class GameManager : MonoBehaviour
             Message message = Message.Create(MessageSendMode.unreliable, ServerToClientId.playerPosRot);
 
             message.Add(player.PlayerId);
-            message.Add(player.transform.position);
-            message.Add(player.transform.rotation);
+            message.Add(player.GetPosition());
+            message.Add(player.GetRotation());
 
             NetworkManager.instance.Server.SendToAll(message, player.PlayerId);
         }
