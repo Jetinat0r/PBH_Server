@@ -1,3 +1,4 @@
+using System;
 using RiptideNetworking;
 using RiptideNetworking.Utils;
 using UnityEngine;
@@ -42,6 +43,12 @@ public class NetworkManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+        }
+
+        string[] commandLineArgs = Environment.GetCommandLineArgs();
+        foreach(string arg in commandLineArgs)
+        {
+            Debug.Log($"Argument: {{{arg}}}");
         }
     }
 
