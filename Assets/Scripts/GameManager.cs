@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using RiptideNetworking;
+using Riptide;
 
 public class GameManager : MonoBehaviour
 {
@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
     //Sends all currently connected clients info about the new client that just joined
     private static void SendNewPlayerJoined(ushort fromClientId, string playerName)
     {
-        Message message = Message.Create(MessageSendMode.reliable, (ushort)ServerToClientId.playerSpawnInfo);
+        Message message = Message.Create(MessageSendMode.Reliable, (ushort)ServerToClientId.playerSpawnInfo);
         message.AddUShort(fromClientId);     //Add client ID
         message.AddString(playerName);       //Add player name
 
@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
     {
         foreach(KeyValuePair<ushort, Player> player in Player.PlayerList)
         {
-            Message message = Message.Create(MessageSendMode.reliable, ServerToClientId.playerSpawnInfo);
+            Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.playerSpawnInfo);
 
             message.Add(player.Value.PlayerId);
             message.AddString(player.Value.PlayerUserName);
@@ -87,12 +87,12 @@ public class GameManager : MonoBehaviour
     }
 
     //Uses the "playerDisconnected" server event
-    private void RemovePlayer(object sender, ClientDisconnectedEventArgs e)
+    private void RemovePlayer(object sender, ServerDisconnectedEventArgs e)
     {
         //TODO: Check if it "breaks" a round
-
-        Destroy(Player.PlayerList[e.Id].gameObject);
-        Player.PlayerList.Remove(e.Id);
+        
+        Destroy(Player.PlayerList[e.Client.Id].gameObject);
+        Player.PlayerList.Remove(e.Client.Id);
     }
     #endregion
 
@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
     {
         foreach(Player player in Player.PlayerList.Values)
         {
-            Message message = Message.Create(MessageSendMode.unreliable, ServerToClientId.playerPosRot);
+            Message message = Message.Create(MessageSendMode.Unreliable, ServerToClientId.playerPosRot);
 
             message.Add(player.PlayerId);
             message.Add(player.GetPosition());
