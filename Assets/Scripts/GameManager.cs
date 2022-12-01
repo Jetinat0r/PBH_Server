@@ -124,5 +124,19 @@ public class GameManager : MonoBehaviour
         }
     }
     #endregion
+
+    #region Player Attack
+    //Redistribute a received attack to all players
+    [MessageHandler((ushort)ClientToServerId.shove)]
+    private static void SendPlayerShove(ushort fromClientId, Message message)
+    {
+        Message newMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.playerShove);
+        newMessage.Add(fromClientId);
+        newMessage.Add(message.GetVector3());
+        newMessage.Add(message.GetQuaternion());
+
+        NetworkManager.instance.Server.SendToAll(newMessage, fromClientId);
+    }
+    #endregion
     #endregion
 }

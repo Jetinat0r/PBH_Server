@@ -11,12 +11,14 @@ public enum ClientToServerId : ushort
 {
     joinInfo = 1,
     playerPosRot = 2,
+    shove = 3,
 }
 
 public enum ServerToClientId : ushort
 {
     playerSpawnInfo = 1,
     playerPosRot = 2,
+    playerShove = 3,
 }
 
 public class NetworkManager : MonoBehaviour
@@ -44,12 +46,14 @@ public class NetworkManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
-
+        
+        /*
         string[] commandLineArgs = Environment.GetCommandLineArgs();
         foreach(string arg in commandLineArgs)
         {
             Debug.Log($"Argument: {{{arg}}}");
         }
+        */
     }
 
     // Start is called before the first frame update
